@@ -2,7 +2,7 @@ from __future__ import annotations
 
 
 class XYZRow:
-    def __init__(self, row_data: str):
+    def __init__(self, row_data: str): 
         # atom symbol | x | y | z
         strings = row_data.split(" ")
         filtered_strings = []
@@ -31,10 +31,16 @@ class XYZRow:
         return [self.data.get(key) for key in self.headers]
 
     def __repr__(self) -> str:
-        return str(self.data.values())
+        list_repr = [str(val) for val in self.data.values()]
+        return str(list_repr)
 
     def column(self, col_name: str):
-        return self.data.get(col_name)
+         return self.data.get(col_name)
+
+    def as_string(self, spacing=4) -> str:
+        """Get the row as a string for printing/writing."""
+        vals = [str(val) for val in self.data.values()]
+        return (" "*spacing).join(vals) + "\n"
 
 class XYZTable:
     def __init__(self, row_lines: list[str]):
@@ -64,4 +70,12 @@ class XYZTable:
         print(self.ordered_headers)
         for row in self.rows:
             print(row.values)
+
+    def as_strings(self, row_spacing=4) -> list[str]:
+        """Get a list of strings for file writing."""
+        formatted_strings = []
+        for row in self.rows:
+            string = row.as_string(spacing=row_spacing)
+            formatted_strings.append(string)
+        return formatted_strings
 

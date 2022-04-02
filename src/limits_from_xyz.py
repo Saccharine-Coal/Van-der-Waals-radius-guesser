@@ -2,11 +2,7 @@ import math
 import sys
 import os
 
-<<<<<<< HEAD
-from limits_from_xyz import get_geometry_data
-=======
-from xyz_from_file import get_geometry_data
->>>>>>> d06d929 (change branch name and pushed wrong local repo)
+import xyz_from_file
 
 # ordered by atomic number
 VDW_RADII = {
@@ -27,6 +23,7 @@ VDW_RADII = {
     "P": 1.8,
     "S": 1.8,
     "Cl": 1.75,
+    "Se": 1.90,
     "Te": 2.06,
     }
 def minimize(xyz, vdw_radius):
@@ -38,9 +35,6 @@ def maximize(xyz, vdw_radius):
 def get_vdw_radius(atom: str, scale: int) -> float:
     return VDW_RADII[atom] * scale
 
-<<<<<<< HEAD
-def write_limits(x_lim, y_lim, z_lim, n_points=50):
-=======
 def input_to_bool(question: str) -> bool:
     """Gets user y/n response and returns a bool corresponding to y or n."""
     invalid = True
@@ -52,46 +46,29 @@ def input_to_bool(question: str) -> bool:
     return True if response == "y" else False
 
 
-def write_limits(x_lim, y_lim, z_lim, n_points=50, target_dir="."):
->>>>>>> d06d929 (change branch name and pushed wrong local repo)
+def write_limits(x_lim, y_lim, z_lim, n_points=50, target_dir=".", comment=""):
 
     def format_to_str(lim: tuple, n_points: int) -> str:
         return f"{n_points} {lim[0]} {lim[1]}\n"
 
+    format_to_write = f"$plots\n {comment}\n{format_to_str(x_lim, n_points)}{format_to_str(y_lim, n_points)}{format_to_str(z_lim, n_points)}0 1 0 0\n0\n$end\n"
     FILENAME = "limits.plot"
-<<<<<<< HEAD
-    if os.path.exists(FILENAME):
-        raise OSError
-    else:
-        with open(FILENAME, "w+") as file:
-            file.write(format_to_str(x_lim, n_points))
-            file.write(format_to_str(y_lim, n_points))
-            file.write(format_to_str(z_lim, n_points))
-        print(f"Limits have been written to {FILENAME}")
-
-def main() -> None:
-=======
     path_to_file = os.path.join(target_dir, FILENAME)
     if input_to_bool(f"{path_to_file} already exists. OVERWRITE?"):
 
         with open(path_to_file, "w+") as file:
-            file.write(format_to_str(x_lim, n_points))
-            file.write(format_to_str(y_lim, n_points))
-            file.write(format_to_str(z_lim, n_points))
-        print(f"Limits have been written to {path_to_file}")
+            file.write(format_to_write)
+            print(f"Limits have been written to {path_to_file}")
     else:
         print(f"Limits have not been written.")
 
 
 def main() -> None:
     """Main"""
->>>>>>> d06d929 (change branch name and pushed wrong local repo)
     args = sys.argv.copy()
     args.pop(0)     # this is the path to this file
     path_to_file = args.pop(0)  # this is the first argument that is given that is not this file
-    xyz_table = get_geometry_data(path_to_file)
-    #xyz_table.print()
-    print(xyz_table.column("atom"))
+    xyz_table = xyz_from_file.main(path_to_file)
     table_dict = {
             "i": [],
             "atoms": [],
@@ -116,16 +93,14 @@ def main() -> None:
         mins.append(minimize(xyz, vdw_radius))
         maxes.append(maximize(xyz, vdw_radius))
     xyz_limits = []
+    axes = ("x", "y", "z")
     for i in range(0, 3):
         min_vals = tuple(val[i] for val in mins)
         max_vals = tuple(val[i] for val in maxes)
         axis_limit = (math.floor(min(min_vals)), math.ceil(max(max_vals)))
         xyz_limits.append(axis_limit)
-        print(f"limits for axis {i} = {axis_limit}")
-<<<<<<< HEAD
-    write_limits(*xyz_limits)
-=======
+        print(f"limits for axis {axes[i]} = {axis_limit}")
     head, tail = os.path.split(path_to_file)[:]
-    write_limits(*xyz_limits, target_dir=head)
->>>>>>> d06d929 (change branch name and pushed wrong local repo)
+    comment = f"Auto Generated limits for {path_to_file}"
+    write_limits(*xyz_limits, target_dir=head, comment=comment)
 main()
