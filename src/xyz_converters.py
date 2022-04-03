@@ -57,7 +57,7 @@ def main(sys_args: list) -> None:
     xyz_table = xyz_from_file.main(path_to_file)
     file = os.path.split(target_file)[-1]
     if "." in file:
-        filename, filetype = file.split(".")[:]
+        filename, filetype = file.rsplit(".", 1)[:]
         formatted_type = "." + filetype
         if (formatted_type) in  TYPE_TO_FUNC.keys():
             func = TYPE_TO_FUNC.get(formatted_type)
